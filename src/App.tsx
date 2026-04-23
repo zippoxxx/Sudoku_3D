@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, ContactShadows, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'motion/react';
@@ -64,6 +64,18 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
+  const numberRemaining = useMemo(() => {
+    const counts = Array(10).fill(0);
+    grid.forEach(row => {
+      row.forEach(cell => {
+        if (cell.value !== null) {
+          counts[cell.value]++;
+        }
+      });
+    });
+    return counts.map(count => Math.max(0, 9 - count));
+  }, [grid]);
 
   // Constants
   const AUTOSAVE_KEY = 'sudoku_3d_autosave_v1';
@@ -402,9 +414,17 @@ export default function App() {
                 <button
                   key={num}
                   onClick={() => handleInput(num)}
-                  className="aspect-square flex items-center justify-center text-sm font-bold bg-[#1e293b] border border-[#334155] rounded-lg active:bg-[#0ea5e9] transition-colors"
+                  disabled={numberRemaining[num] === 0}
+                  className={`relative aspect-square flex items-center justify-center text-sm font-bold bg-[#1e293b] border border-[#334155] rounded-lg active:bg-[#0ea5e9] transition-colors ${
+                    numberRemaining[num] === 0 ? 'opacity-20 grayscale cursor-not-allowed' : ''
+                  }`}
                 >
                   {num}
+                  {numberRemaining[num] > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-sky-500 text-white text-[8px] flex items-center justify-center rounded-full shadow-lg">
+                      {numberRemaining[num]}
+                    </span>
+                  )}
                 </button>
               ))}
               <button
@@ -577,12 +597,24 @@ export default function App() {
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <motion.button
                 key={num}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={numberRemaining[num] > 0 ? { scale: 1.05 } : {}}
+                whileTap={numberRemaining[num] > 0 ? { scale: 0.95 } : {}}
                 onClick={() => handleInput(num)}
-                className="aspect-square flex items-center justify-center text-lg font-bold bg-[#1e293b] border border-[#334155] rounded-xl hover:border-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/10 transition-all active:bg-[#0ea5e9] active:text-white"
+                disabled={numberRemaining[num] === 0}
+                className={`relative group aspect-square flex flex-col items-center justify-center bg-[#1e293b] border border-[#334155] rounded-xl transition-all ${
+                  numberRemaining[num] === 0 
+                    ? 'opacity-20 grayscale cursor-not-allowed' 
+                    : 'hover:border-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/10 active:bg-[#0ea5e9] active:text-white'
+                }`}
               >
-                {num}
+                <span className="text-xl font-bold">{num}</span>
+                {numberRemaining[num] > 0 ? (
+                  <span className="text-[10px] text-[#64748b] group-hover:text-[#0ea5e9]/70">
+                    Restam {numberRemaining[num]}
+                  </span>
+                ) : (
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500 mt-1" />
+                )}
               </motion.button>
             ))}
           </div>
