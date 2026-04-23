@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0f172a] text-[#f1f5f9] antialiased overflow-hidden;
+  }
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+.glass-panel {
+  @apply bg-[#1e293b] border border-[#334155] shadow-xl;
+}
+
+.stat-label {
+  @apply text-[11px] uppercase tracking-[0.1em] text-[#64748b] font-bold;
+}
+
+.stat-value {
+  @apply text-2xl font-bold text-[#f8fafc];
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+}
+
+.text-shadow-glow {
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+@utility blur-xl {
+  filter: blur(24px);
+}
